@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import swal from 'sweetalert';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -10,17 +12,20 @@ import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
+const MySwal = withReactContent(Swal);
+
 function AddCustomer() {
     const navigate = useNavigate();
     const [customerInput, setCustomer] = useState({
         first_name: '',
         last_name: '',
         email: '',
+        error_list: []
     });
 
     const handleInput = (e) => {
         e.persist();
-        setCustomer({ ...customerInput, [e.target.name]: e.target.value })                  
+        setCustomer({ ...customerInput, [e.target.name]: e.target.value })
     }
 
     const submit = (e) => {
@@ -35,15 +40,42 @@ function AddCustomer() {
         axios.post(`api/customers`, data).then(res => {
 
             if (res.data.status === 200) {
-                swal('Success!', res.data.message, 'success');
+                MySwal.fire({
+                    title: 'Success!',
+                    html: `${res.data.message}`,
+                    icon: 'success',
+                    confirmButtonColor: '#a5dc86',
+                    confirmButtonText: 'Ok',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
                 setCustomer({
                     first_name: '',
                     last_name: '',
                     email: '',
+                    error_list: [],
                 });
                 navigate('/customers', { replace: true });
             } else if (res.data.status === 422) {
-                setCustomer({ ...customerInput, error_list: res.data.validate_err });
+                setCustomer({ ...customerInput, error_list: res.data.errors });
+                if (res.data.errors) {
+                    MySwal.fire({
+                        title: `${Object.values(res.data.errors)[0]}`,
+                        icon: 'warning',
+                        confirmButtonColor: '#facea8',
+                        confirmButtonText: 'Ok',
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    });
+                }
             }
         });
     }
@@ -62,14 +94,17 @@ function AddCustomer() {
                             <Form onSubmit={submit}>
                                 <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
                                     <Form.Control type='text' name='first_name' onChange={handleInput} value={customerInput.first_name} placeholder='First name' />
+                                    <span className="text-danger">{customerInput.error_list.first_name}</span>
                                 </Form.Group>
 
                                 <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
                                     <Form.Control type='text' name='last_name' onChange={handleInput} value={customerInput.last_name} placeholder='Last name' />
+                                    <span className="text-danger">{customerInput.error_list.last_name}</span>
                                 </Form.Group>
 
                                 <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
                                     <Form.Control type='email' name='email' onChange={handleInput} value={customerInput.email} placeholder='Email address' />
+                                    <span className="text-danger">{customerInput.error_list.email}</span>
                                 </Form.Group>
 
                                 <Form.Group>

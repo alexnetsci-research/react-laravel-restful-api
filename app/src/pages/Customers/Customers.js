@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; 
-import swal from 'sweetalert';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -10,9 +11,11 @@ import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
+const MySwal = withReactContent(Swal);
+
 function Customers() {
     const [customers, setCustomers] = useState([]);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         let isMounted = true;
@@ -26,18 +29,43 @@ function Customers() {
     }, []);
 
     const deleteCustomer = (e, id) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         const thisClicked = e.currentTarget;
         thisClicked.innerText = "Deleting";
 
         axios.delete(`api/customers/${id}`).then(res => {
             if (res.data.status === 200) {
-                swal("Success!", res.data.message, "success");
+                MySwal.fire({
+                    title: 'Success!',
+                    html: `${res.data.message}`,
+                    icon: 'success',
+                    confirmButtonColor: '#a5dc86',
+                    confirmButtonText: 'Ok',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
+
                 thisClicked.closest("tr").remove();
             }
             else if (res.data.status === 404) {
-                swal("Error", res.data.message, "error");
+                MySwal.fire({
+                    title: `${res.data.message}`,
+                    icon: 'warning',
+                    confirmButtonColor: '#facea8',
+                    confirmButtonText: 'Ok',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
+                
                 thisClicked.innerText = "Delete";
             }
         });

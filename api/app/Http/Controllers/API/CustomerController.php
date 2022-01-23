@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
@@ -31,18 +32,26 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email|unique:customers,email',
         ]);
 
-        Customer::create($validated);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages(),
+            ]);
+        } else {
+            $validated = $validator->validated();
+            Customer::create($validated);
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Customer Added Successfully!'
-        ]);
+            return response()->json([
+                'status' => 200,
+                'message' => 'Customer Added Successfully!'
+            ]);
+        }
     }
 
     /**
@@ -64,10 +73,17 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        return response()->json([
-            'status' => 200,
-            'customer' => $customer
-        ]);
+        if ($customer) {
+            return response()->json([
+                'status' => 200,
+                'customer' => $customer
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'No Customer ID Found',
+            ]);
+        }
     }
 
     /**
@@ -79,18 +95,33 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email|unique:customers,email,' . $customer->id,
         ]);
 
-        $customer->update($validated);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages(),
+            ]);
+        } else {
+            if ($customer) {
+                $validated = $validator->validated();
+                $customer->update($validated);
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Customer Updated Successfully!'
-        ]);
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Customer Updated Successfully!'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'No Customer ID Found',
+                ]);
+            }
+        }
     }
 
     /**
@@ -101,16 +132,16 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        if($customer) {
+        if ($customer) {
             $customer->delete();
             return response()->json([
-                'status'=> 200,
-                'message'=>'Customer Deleted Successfully',
+                'status' => 200,
+                'message' => 'Customer Deleted Successfully!',
             ]);
         } else {
             return response()->json([
-                'status'=> 404,
-                'message' => 'No customer ID Found',
+                'status' => 404,
+                'message' => 'No Customer ID Found',
             ]);
         }
     }
