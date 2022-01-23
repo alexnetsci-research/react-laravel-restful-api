@@ -20,7 +20,7 @@ function AddCustomer() {
 
     const handleInput = (e) => {
         e.persist();
-        setCustomer({ ...customerInput, [e.target.name]: e.target.value })
+        setCustomer({ ...customerInput, [e.target.name]: e.target.value })                  
     }
 
     const submit = (e) => {
@@ -32,18 +32,17 @@ function AddCustomer() {
             email: customerInput.email,
         }
 
-        axios.post(`http://localhost:8000/api/add-customer`, data).then(res => {
+        axios.post(`api/customers`, data).then(res => {
 
             if (res.data.status === 200) {
-                swal("Success!", res.data.message, "success");
+                swal('Success!', res.data.message, 'success');
                 setCustomer({
                     first_name: '',
                     last_name: '',
                     email: '',
                 });
-                navigate("/", { replace: true });
-            }
-            else if (res.data.status === 422) {
+                navigate('/customers', { replace: true });
+            } else if (res.data.status === 422) {
                 setCustomer({ ...customerInput, error_list: res.data.validate_err });
             }
         });
@@ -56,25 +55,25 @@ function AddCustomer() {
                     <Card>
                         <Card.Header>
                             <h3>Add Customer
-                                <Link to={'/'} className='btn btn-secondary btn-sm float-end'>Back</Link>
+                                <Link to={'/customers'} className='btn btn-secondary btn-sm float-end'>Back</Link>
                             </h3>
                         </Card.Header>
                         <Card.Body>
                             <Form onSubmit={submit}>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                    <Form.Control type="text" name="first_name" onChange={handleInput} value={customerInput.first_name} placeholder="First name" />
+                                <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+                                    <Form.Control type='text' name='first_name' onChange={handleInput} value={customerInput.first_name} placeholder='First name' />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                    <Form.Control type="text" name="last_name" onChange={handleInput} value={customerInput.last_name} placeholder="Last name" />
+                                <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+                                    <Form.Control type='text' name='last_name' onChange={handleInput} value={customerInput.last_name} placeholder='Last name' />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                    <Form.Control type="email" name="email" onChange={handleInput} value={customerInput.email} placeholder="Email address" />
+                                <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+                                    <Form.Control type='email' name='email' onChange={handleInput} value={customerInput.email} placeholder='Email address' />
                                 </Form.Group>
 
                                 <Form.Group>
-                                    <Button type="submit" variant="success btn-sm">Submit</Button>
+                                    <Button type='submit' variant='success btn-sm'>Submit</Button>
                                 </Form.Group>
                             </Form>
                         </Card.Body>
