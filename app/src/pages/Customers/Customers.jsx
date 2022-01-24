@@ -13,7 +13,7 @@ import Button from 'react-bootstrap/Button';
 
 const MySwal = withReactContent(Swal);
 
-function Customers() {
+const Customers = () => {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
 

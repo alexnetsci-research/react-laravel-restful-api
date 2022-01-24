@@ -1,12 +1,29 @@
-import React from 'react'; 
-import { Link } from "react-router-dom"; 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Link } from "react-router-dom";
 
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import Badge from 'react-bootstrap/Badge';
 
-function NavigationBar() {
+function tick() {
+    const element = (
+        <h3>
+            <Badge bg="secondary">{new Date().toLocaleTimeString()}</Badge>
+        </h3>
+    ); 
+
+    ReactDOM.render(
+        element, 
+        document.getElementById('clock')
+    );
+}
+
+setInterval(tick, 1000);
+
+const NavigationBar = () => {
     return (
         <Navbar bg="light" expand="lg">
             <Container>
@@ -19,6 +36,10 @@ function NavigationBar() {
                             <NavDropdown.Item as={Link} to="/customers">Customers</NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/add-customer">Add Customer</NavDropdown.Item>
                         </NavDropdown>
+                    </Nav>
+
+                    <Nav className="ms-auto">
+                        <span id="clock"></span>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

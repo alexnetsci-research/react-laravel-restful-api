@@ -10,7 +10,7 @@ import EditCustomer from './pages/Customers/EditCustomer';
 import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8000/';
 
-function App() {
+const App = () => {
   return (
     <div className='App'>
       <NavigationBar />

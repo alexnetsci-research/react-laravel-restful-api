@@ -13,7 +13,7 @@ import Button from 'react-bootstrap/Button';
 
 const MySwal = withReactContent(Swal);
 
-function EditCustomer() {
+const EditCustomer = () => {
     const [loading, setLoading] = useState(true);
     const [customerInput, setCustomer] = useState([]);
     const [errorInput, setError] = useState([]);

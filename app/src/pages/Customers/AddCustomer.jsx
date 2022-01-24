@@ -14,7 +14,7 @@ import Button from 'react-bootstrap/Button';
 
 const MySwal = withReactContent(Swal);
 
-function AddCustomer() {
+const AddCustomer = () => {
     const navigate = useNavigate();
     const [customerInput, setCustomer] = useState({
         first_name: '',
